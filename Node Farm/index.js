@@ -55,17 +55,20 @@ const tempProduct = fs.readFileSync(
 );
 const dataObj = JSON.parse(readedFileSync);
 const server = http.createServer((req, res) => {
-  if (req.url === '/' || req.url === '/overview') {
+  const { query, pathname } = url.parse(req.url, true);
+  if (pathname === '/' || pathname === '/overview') {
     //overview page
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(tempCard, el))
       .join('');
     const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
     res.end(output);
-  } else if (req.url === '/tour') {
+  } else if (pathname === '/product') {
     //tour page
-    res.end('<h1>Hello from the tour</h1>');
-  } else if (req.url === '/api') {
+    const product = dataObj[query.id];
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
+  } else if (pathname === '/api') {
     //api
     res.writeHead(200, { 'Content-type': 'application/json' });
     res.end(readedFileSync);
