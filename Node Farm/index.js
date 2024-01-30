@@ -36,11 +36,31 @@ const transfer = async (src, dest) => {
 };
 // transfer("./../../../txt", "./txt");
 ////////////////////////////////////SERVER////////////////////////////////////
+const readedFileSync = fs.readFileSync(
+  `${__dirname}/dev-data/data.json`,
+  'utf-8'
+);
+const tempCard = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  'utf-8'
+);
+const tempOverview = fs.readFileSync(
+  `${__dirname}/templates/template-overview.html`,
+  'utf-8'
+);
+const tempProduct = fs.readFileSync(
+  `${__dirname}/templates/template-product.html`,
+  'utf-8'
+);
+const data = JSON.parse(readedFileSync);
 const server = http.createServer((req, res) => {
   if (req.url === '/' || req.url === '/overview') {
     res.end('<h1>Hello from the overview</h1>');
   } else if (req.url === '/tour') {
     res.end('<h1>Hello from the tour</h1>');
+  } else if (req.url === '/api') {
+    res.writeHead(200, { 'Content-type': 'application/json' });
+    res.end(readedFileSync);
   } else {
     res.writeHead(400, { 'Content-type': 'text/html' });
     res.end('<h1>Page not found</h1>');
