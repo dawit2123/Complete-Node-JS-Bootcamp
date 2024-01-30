@@ -3,6 +3,7 @@ const path = require('path');
 const http = require('http');
 const fsExtra = require('fs-extra');
 const url = require('url');
+const replaceTemplate = require('./modules/replaceTemplate');
 ////////////////////////FILES//////////////////////////////
 // //reading and writing the file in synchronous way
 // const readedFile = fs.readFileSync(
@@ -52,16 +53,24 @@ const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
   'utf-8'
 );
-const data = JSON.parse(readedFileSync);
+const dataObj = JSON.parse(readedFileSync);
 const server = http.createServer((req, res) => {
   if (req.url === '/' || req.url === '/overview') {
-    res.end('<h1>Hello from the overview</h1>');
+    //overview page
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(tempCard, el))
+      .join('');
+    const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
+    res.end(output);
   } else if (req.url === '/tour') {
+    //tour page
     res.end('<h1>Hello from the tour</h1>');
   } else if (req.url === '/api') {
+    //api
     res.writeHead(200, { 'Content-type': 'application/json' });
     res.end(readedFileSync);
   } else {
+    //handling the 404 page not found errors
     res.writeHead(400, { 'Content-type': 'text/html' });
     res.end('<h1>Page not found</h1>');
   }
