@@ -3,6 +3,7 @@ const path = require('path');
 const http = require('http');
 const fsExtra = require('fs-extra');
 const url = require('url');
+const slugify = require('slugify');
 const replaceTemplate = require('./modules/replaceTemplate');
 ////////////////////////FILES//////////////////////////////
 // //reading and writing the file in synchronous way
@@ -54,6 +55,7 @@ const tempProduct = fs.readFileSync(
   'utf-8'
 );
 const dataObj = JSON.parse(readedFileSync);
+// console.log(slugify('Advanced Template Blog', { lower: true }));
 const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
   if (pathname === '/' || pathname === '/overview') {
