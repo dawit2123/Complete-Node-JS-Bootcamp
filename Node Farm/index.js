@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const http = require("http");
+const fsExtra = require("fs-extra");
 ////////////////////////FILES//////////////////////////////
 // //reading and writing the file in synchronous way
 // const readedFile = fs.readFileSync(
@@ -27,4 +28,17 @@ const http = require("http");
 //     );
 //   }
 // );
+//Moving the file to the desktop
+const transfer = async (src, dest) => {
+  await fsExtra.move(src, dest, { overwrite: true });
+  console.log("Successfully transfered ");
+};
+transfer("./../../../txt", "./txt");
 ////////////////////////////////////SERVER////////////////////////////////////
+// const server = http.createServer((req, res) => {
+//   //   res.writeHead({ type: "text/html" });
+//   res.end("Hello from the server");
+// });
+// server.listen(3000, "localhost", () => {
+//   console.log("App listening on port 3000");
+// });
