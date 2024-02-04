@@ -8,9 +8,6 @@ const handleDuplicateFieldsDB = err => {
   const message = `Duplicate field value :${value}. Please use another value`;
   return new AppError(message, 400);
 };
-const handleJWTError = () => new AppError('Invalid web token error', 401);
-const handleJWTEXpiredError = () =>
-  new AppError('Token expired, please login again.', 401);
 const handleValidationErrorDB = err => {
   const errors = Object.values(err.errors).map(el => el.message);
   const message = `Invalid data input. ${errors.join('. ')}`;
