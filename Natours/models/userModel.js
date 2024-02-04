@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
     ],
     required: [true, 'please confirm the password'],
     validate: {
-      validator: function() {
-        return this.password === this.passwordConfirm;
+      validator: function(el) {
+        return this.password === el;
       },
       message: "The password and password confirm doesn't match"
     }
@@ -39,11 +39,10 @@ const userSchema = new mongoose.Schema({
 });
 //preSave hook (handler) for the userSchema
 userSchema.pre('save', async function(next) {
+  //checking if the password isn't modified
+  if (!this.isModified('password')) next();
   this.password = await bcrypt.hash(this.password, 12);
-  next();
-});
-//doing password confirm validation
-userSchema.post('save', function(doc, next) {
+  //deleting the password confirm field
   this.passwordConfirm = undefined;
   next();
 });
