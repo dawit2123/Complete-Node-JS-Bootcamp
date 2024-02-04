@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { string } = require('sharp/lib/is');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -35,6 +36,15 @@ const userSchema = new mongoose.Schema({
       message: "The password and password confirm doesn't match"
     }
   }
+});
+//preSave hook (handler) for the userSchema
+userSchema.pre('save', async function(next) {
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
+userSchema.post('save', function(doc, next) {
+  this.passwordConfirm = undefined;
+  next();
 });
 const User = mongoose.model('User', userSchema);
 module.exports = User;
