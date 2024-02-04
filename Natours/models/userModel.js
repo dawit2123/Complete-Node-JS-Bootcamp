@@ -42,6 +42,7 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
+//doing password confirm validation
 userSchema.post('save', function(doc, next) {
   this.passwordConfirm = undefined;
   next();
