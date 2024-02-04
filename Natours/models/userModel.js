@@ -27,7 +27,13 @@ const userSchema = new mongoose.Schema({
       8,
       'A password confirm should have at least 10 characters long'
     ],
-    required: [true, 'please confirm the password']
+    required: [true, 'please confirm the password'],
+    validate: {
+      validator: function() {
+        return this.password === this.passwordConfirm;
+      },
+      message: "The password and password confirm doesn't match"
+    }
   }
 });
 const User = mongoose.model('User', userSchema);
