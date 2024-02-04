@@ -1,9 +1,11 @@
 const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
-const { use } = require('../app');
+const { use, route } = require('../app');
 
 const router = new express.Router();
+
+router.post('/signup', authController.signup);
 
 router.get('/get-me', userController.getMe, userController.getUser);
 router.patch(
