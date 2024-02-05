@@ -5,7 +5,9 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const errorController = require('./controllers/errorController');
 const rateLimit = require('express-rate-limit');
-const helmet= require('helmet');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 const app = express();
 //serving the static files
@@ -17,6 +19,8 @@ const limiter = rateLimit({
   message: 'Too many requests from this pc. Please try again in one hour'
 });
 app.use('/api', limiter);
+//setting the headers
+app.use(helmet());
 //a middleware for limiting attempts to the login page
 const limiterLogin = rateLimit({
   max: 4,
@@ -26,6 +30,10 @@ const limiterLogin = rateLimit({
 app.use('/api/v1/users/login', limiterLogin);
 //Adding a middleware to the body object
 app.use(express.json({ limit: '10kb' }));
+//sanitizing against the nosql query injection
+app.use(mongoSanitize());
+//sanitizing against the xss attacks
+app.use(xss());
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 //A handler for the pages that are found in the routes
