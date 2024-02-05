@@ -20,7 +20,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     minLength: [8, 'A password should have at least 10 characters long'],
-    required: [true, 'please enter the password']
+    required: [true, 'please enter the password'],
+    select: false
   },
   passwordConfirm: {
     type: String,
@@ -46,5 +47,17 @@ userSchema.pre('save', async function(next) {
   this.passwordConfirm = undefined;
   next();
 });
+//not allowing the user to see the hashed password in creation
+userSchema.post('save', function(doc, next) {
+  this.password = undefined;
+  next();
+});
+//creating isCorrectPassword instance method on the schema
+userSchema.methods.isCorrectPassword = async (
+  candidatePassword,
+  userPassword
+) => {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 const User = mongoose.model('User', userSchema);
 module.exports = User;

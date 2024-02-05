@@ -6,6 +6,7 @@ const { use, route } = require('../app');
 const router = new express.Router();
 
 router.post('/signup', authController.signup);
+router.post('/login', authController.login);
 
 router.get('/get-me', userController.getMe, userController.getUser);
 router.patch(
