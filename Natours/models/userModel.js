@@ -52,6 +52,10 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: {
     type: String,
     default: Date.now() + 10 * 60 * 1000
+  },
+  active: {
+    type: Boolean,
+    default: true
   }
 });
 //preSave hook (handler) for the userSchema
@@ -63,10 +67,16 @@ userSchema.pre('save', async function(next) {
   this.passwordConfirm = undefined;
   next();
 });
-//preSace hook for the userSchema to set the passwordChangedAt property
+//preSave hook for the userSchema to set the passwordChangedAt property
 userSchema.pre('save', function(next) {
   if (!this.isModified('password') || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+//a query middleware to set the active fields not show up in the results of find method
+userSchema.pre(/^find/, function(next) {
+  this.find({ active: true });
+  next();
 });
 //not allowing the user to see the hashed password in creation
 userSchema.post('save', function(doc, next) {
