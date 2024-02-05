@@ -3,6 +3,7 @@ const { string } = require('sharp/lib/is');
 const crypto = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const { use } = require('../app');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -61,6 +62,11 @@ userSchema.pre('save', async function(next) {
   //deleting the password confirm field
   this.passwordConfirm = undefined;
   next();
+});
+//preSace hook for the userSchema to set the passwordChangedAt property
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
 });
 //not allowing the user to see the hashed password in creation
 userSchema.post('save', function(doc, next) {

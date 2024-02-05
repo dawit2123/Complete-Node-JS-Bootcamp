@@ -87,13 +87,58 @@ module.exports.forgotPassword = catchAsync(async (req, res, next) => {
   const token = user.createToken();
   user.save({ validateBeforeSave: false });
   //3) send it via an email
-  const text = `The password reset link is : \n ${req.protocol}//${req.get(
+  const resetLink = `${req.protocol}//${req.get(
     'host'
-  )}/${token}. 
-  If you don't want to reset the password, just leave this email`;
-  await sendMail({
-    email: user.email,
-    subject: 'Your password reset token (valid for 10 min)',
-    text
-  });
+  )}/api/v1/users/resetPassword/${token}`;
+  const text = `The password reset link is : \n ${resetLink}. 
+  If you don't forgot the password, just ignore this email`;
+  try {
+    await sendMail({
+      email: user.email,
+      subject: 'Your password reset token (valid for 10 min)',
+      text
+    });
+    res.status(200).json({
+      status: 'success',
+      message: 'Reset link successfully sent via email'
+    });
+  } catch (err) {
+    user.passwordResetExpires = undefined;
+    user.passwordResetToken = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError(`Couldn't send an email. Please try again`));
+  }
 });
+module.exports.resetPassword = (req, res, next) => {
+  //1) getting the user based on the token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+  const user = User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() }
+  });
+  //2) checking if the token expires and setting the new password
+  if (!user) {
+    return next(
+      new AppError('You have used invalid link to reset the password', 401)
+    );
+  }
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  user.save();
+  //3) updating passwordChangedAt property
+
+  //4) signing and sending the token
+  const token = signJWT(user._id);
+  res.status(201).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
+};

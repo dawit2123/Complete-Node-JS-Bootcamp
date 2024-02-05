@@ -16,7 +16,7 @@ const sendMail = async options => {
     from: 'Dawit Zewdu <dawitzewdu2123@gmail.com>',
     to: options.to,
     subject: options.subject,
-    text: options.text
+    text: options.message
     // html
   };
   //3) sending the email using transporter
