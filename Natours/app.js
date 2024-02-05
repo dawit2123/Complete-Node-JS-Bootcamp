@@ -5,6 +5,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const errorController = require('./controllers/errorController');
 const rateLimit = require('express-rate-limit');
+const helmet= require('helmet');
 
 const app = express();
 //serving the static files
