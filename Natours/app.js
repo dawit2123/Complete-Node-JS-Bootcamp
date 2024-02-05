@@ -4,6 +4,7 @@ const AppError = require('./utils/appError');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const errorController = require('./controllers/errorController');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 //serving the static files
