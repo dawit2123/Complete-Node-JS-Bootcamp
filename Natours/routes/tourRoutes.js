@@ -12,6 +12,7 @@ const {
   updateTour
 } = require('./../controllers/tourController');
 const reviewRouter = require('./../routes/reviewRoutes');
+const authController = require('./../controllers/authController');
 const { route } = require('../app');
 
 const router = new express.Router();
@@ -21,7 +22,11 @@ router.route('/get-tours-stat').get(getTourStat);
 router.route('/top-5-best').get(configTop5, getAllTours);
 router
   .route('/')
-  .get(getAllTours)
+  .get(
+    authController.protect,
+    // authController.restrictTo(''admin',lead-guide'),
+    getAllTours
+  )
   .post(addTour);
 router
   .route('/:id')

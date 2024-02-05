@@ -115,28 +115,15 @@ tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-tourSchema.index({ price: 1 });
-tourSchema.index({ startLocation: '2dsphere' });
 tourSchema.virtual('durationWeek').get(function() {
   return this.duration / 7;
 });
-//virtual populate
-tourSchema.virtual('reviews', {
-  ref: 'Review',
-  foreignField: 'tour',
-  localField: '_id'
-});
+
 //query middleware
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
   next();
 });
-tourSchema.pre(/^find/, function(next) {
-  this.populate({
-    path: 'guides',
-    select: '-__v -passwordChangedAt'
-  }).populate({ path: 'reviews' });
-  next();
-});
+
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
