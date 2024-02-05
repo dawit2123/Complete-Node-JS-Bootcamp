@@ -2,8 +2,9 @@ const nodemailer = require('nodemailer');
 const sendMail = async options => {
   //1) creating a transporter
   const transporter = nodemailer.createTransport({
-    //for services that are not registered in nodemon 
-    //we should specify
+    //for services that are not registered in nodemon
+    //we should specify the host and port  like host: process.env.host
+    //and the port like port: process.env.port
     service: 'Google',
     auth: {
       user: process.env.EMAIL_USERNAME,
