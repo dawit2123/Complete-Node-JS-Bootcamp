@@ -10,6 +10,16 @@ const signJWT = id => {
     expiresIn: process.env.JWT_EXPIRES_IN
   });
 };
+const createAndSignToken = (user, statusCode, res) => {
+  const token = signJWT(user._id);
+  res.status(statusCode).json({
+    status: 'success',
+    token,
+    data: {
+      user
+    }
+  });
+};
 module.exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -17,14 +27,7 @@ module.exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm
   });
-  const token = signJWT(newUser._id);
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser
-    }
-  });
+  createAndSignToken(newUser, 201, res);
 });
 module.exports.login = catchAsync(async function(req, res, next) {
   const { email, password } = req.body;
@@ -38,14 +41,7 @@ module.exports.login = catchAsync(async function(req, res, next) {
     return next(new AppError('Incorrect email or password', 401));
   }
   //3) signing and sending the token
-  const token = signJWT(user._id);
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user
-    }
-  });
+  createAndSignToken(user, 201, res);
 });
 module.exports.protect = catchAsync(async (req, res, next) => {
   //1) checking if the token exists
@@ -131,14 +127,23 @@ module.exports.resetPassword = (req, res, next) => {
   user.passwordResetExpires = undefined;
   user.save();
   //3) updating passwordChangedAt property
-
+  //made by the pre save hook on the userSchema
   //4) signing and sending the token
-  const token = signJWT(user._id);
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user
-    }
-  });
+  createAndSignToken(user, 201, res);
 };
+module.exports.updatePassword = catchAsync(async (req, res, next) => {
+  //1)getting the current password , new password and confirm password values
+  const currentPassword = req.body.currentPassword;
+  const newPassword = req.body.newPassword;
+  const confirmPassword = req.body.confirmPassword;
+  const user = User.findById(user._id).select('+password');
+  //2) checking whether the current password is the same as the user password in the db
+  const verified = user.isCorrectPassword(currentPassword, user.password);
+  if (!verified) {
+    next('Your current password is wrong', 401);
+  }
+  //3) if so update the password by checking the password with the passwordConfirm
+  user.password = newPassword;
+  user.confirmPassword = confirmPassword;
+  await user.save();
+});
