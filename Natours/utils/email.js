@@ -5,15 +5,16 @@ const sendMail = async options => {
     //for services that are not registered in nodemon
     //we should specify the host and port  like host: process.env.host
     //and the port like port: process.env.port
-    service: 'Google',
+    host: 'sandbox.smtp.mailtrap.io',
+    port: 2525,
     auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD
+      user: 'd181c41641c224',
+      pass: 'd3d0f3adce5450'
     }
   });
   //2) creating a mail option
   const mailOptions = {
-    from: 'Dawit Zewdu <dawitzewdu2123@gmail.com>',
+    from: 'Dawit Zewdu <dawitmunie111@gmail.com>',
     to: options.to,
     subject: options.subject,
     text: options.message
