@@ -8,6 +8,6 @@ reviewRouter
   .post(
     authController.protect,
     authController.restrictTo('user'),
-    reviewController.getReview
+    reviewController.createReview
   );
 module.exports = reviewRouter;

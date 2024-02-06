@@ -54,8 +54,8 @@ module.exports.login = catchAsync(async function(req, res, next) {
 module.exports.protect = catchAsync(async (req, res, next) => {
   //1) checking if the token exists
   let token;
-  if (req.headers && req.headers.authentication) {
-    token = req.headers.authentication.split(' ')[1];
+  if (req.headers && req.headers.authorization) {
+    token = req.headers.authorization.split(' ')[1];
   }
   if (!token) {
     next(new AppError('Unable to authenticate'));
@@ -98,13 +98,11 @@ module.exports.forgotPassword = catchAsync(async (req, res, next) => {
   If you don't forgot the password, just ignore this email`;
 
   try {
-    console.log(
-      await sendMail({
-        email: user.email,
-        subject: 'Your password reset token (valid for 10 min)',
-        text
-      })
-    );
+    await sendMail({
+      email: user.email,
+      subject: 'Your password reset token (valid for 10 min)',
+      text
+    });
     res.status(200).json({
       status: 'success',
       message: 'Reset link successfully sent via email'
@@ -151,7 +149,7 @@ module.exports.updatePassword = catchAsync(async (req, res, next) => {
   //2) checking whether the current password is the same as the user password in the db
   const verified = user.isCorrectPassword(currentPassword, user.password);
   if (!verified) {
-    next('Your current password is wrong', 401); 
+    next('Your current password is wrong', 401);
   }
   //3) if so update the password by checking the password with the passwordConfirm
   user.password = newPassword;

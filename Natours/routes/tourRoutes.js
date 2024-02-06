@@ -22,11 +22,7 @@ router.route('/get-tours-stat').get(getTourStat);
 router.route('/top-5-best').get(configTop5, getAllTours);
 router
   .route('/')
-  .get(
-    authController.protect,
-    // authController.restrictTo(''admin',lead-guide'),
-    getAllTours
-  )
+  .get(getAllTours)
   .post(addTour);
 router
   .route('/:id')
