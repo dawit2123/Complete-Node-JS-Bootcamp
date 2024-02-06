@@ -8,7 +8,8 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
-const hpp = require('hpp');mac
+const hpp = require('hpp');
+const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
 //serving the static files
@@ -50,6 +51,7 @@ app.use(
 );
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 //A handler for the pages that are found in the routes
 app.all('*', (req, res, next) => {
   //   const err = new Error();

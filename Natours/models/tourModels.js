@@ -101,6 +101,11 @@ const tourSchema = new mongoose.Schema(
         description: String
       }
     ],
+
+    /**In order to populate the data, you should use the type
+     * property to be of mongoose.Schema.ObjectId and ref
+     *
+     */
     guides: [
       {
         type: mongoose.Schema.ObjectId,
@@ -125,5 +130,13 @@ tourSchema.pre(/^find/, function(next) {
   next();
 });
 
+// A query middlewar to populate the of child refenced guides data
+tourSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v --passwordChangedAt'
+  });
+  next();
+});
 const Tour = mongoose.model('Tour', tourSchema);
 module.exports = Tour;
