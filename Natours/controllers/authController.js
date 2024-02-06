@@ -96,12 +96,15 @@ module.exports.forgotPassword = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPassword/${token}`;
   const text = `The password reset link is : \n ${resetLink}. 
   If you don't forgot the password, just ignore this email`;
+
   try {
-    await sendMail({
-      email: user.email,
-      subject: 'Your password reset token (valid for 10 min)',
-      text
-    });
+    console.log(
+      await sendMail({
+        email: user.email,
+        subject: 'Your password reset token (valid for 10 min)',
+        text
+      })
+    );
     res.status(200).json({
       status: 'success',
       message: 'Reset link successfully sent via email'
@@ -148,7 +151,7 @@ module.exports.updatePassword = catchAsync(async (req, res, next) => {
   //2) checking whether the current password is the same as the user password in the db
   const verified = user.isCorrectPassword(currentPassword, user.password);
   if (!verified) {
-    next('Your current password is wrong', 401);
+    next('Your current password is wrong', 401); 
   }
   //3) if so update the password by checking the password with the passwordConfirm
   user.password = newPassword;
