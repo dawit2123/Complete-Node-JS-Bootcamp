@@ -17,6 +17,9 @@ const { route } = require('../app');
 
 const router = new express.Router();
 // router.param('id', checkID);
+
+//doing nested routes for the review router
+router.use('/:tourId', reviewRouter);
 router.route('/monthly-plan/:year').get(monthlyPlan);
 router.route('/get-tours-stat').get(getTourStat);
 router.route('/top-5-best').get(configTop5, getAllTours);
