@@ -34,7 +34,7 @@ const deleteAllTours = async () => {
     await Tour.deleteMany({});
     await User.deleteMany({});
     await Review.deleteMany({});
-    console.log('All tours are deleted successfully');
+    console.log('All data are deleted successfully');
   } catch (err) {
     console.log(`Error occured in deleting. ${err}`);
   }

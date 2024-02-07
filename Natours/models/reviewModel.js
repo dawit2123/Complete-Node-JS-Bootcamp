@@ -29,6 +29,31 @@ const reviewSchema = new mongoose.Schema(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+//calculating the average ratings using a static method
+reviewSchema.statics.calcAverageRating = async function(tourId) {
+  //In static functions, this keyword points to the model
+  const stat = await this.aggregate([
+    { $match: { tour: tourId } },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        rAverage: { $avg: '$rating' }
+      }
+    }
+  ]);
+  const data = await Tour.findByIdAndUpdate(tourId, {
+    ratingsAverage: stat[0].rAverage,
+    ratingsQuantity: stat[0].nRating
+  });
+};
+//calling the calcAverageRating function on the save
+reviewSchema.post('save', function() {
+  this.constructor.calcAverageRating(this.tour);
+});
+
 reviewSchema.pre(/^find/, function(next) {
   this.populate({
     path: 'tour',
@@ -39,5 +64,6 @@ reviewSchema.pre(/^find/, function(next) {
   });
   next();
 });
+
 const Review = mongoose.model('Review', reviewSchema);
 module.exports = Review;

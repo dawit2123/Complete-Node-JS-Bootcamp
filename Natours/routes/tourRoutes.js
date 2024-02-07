@@ -19,12 +19,12 @@ const router = new express.Router();
 // router.param('id', checkID);
 
 //doing nested routes for the review router
-router.use('/:tourId', reviewRouter);
+router.use('/:tourId/reviews', reviewRouter);
 router
   .route('/monthly-plan/:year')
   .get(
     authController.protect,
-    authController.restrictTo('user', 'lead-guide', 'guide'),
+    authController.restrictTo('admin', 'lead-guide', 'guide'),
     monthlyPlan
   );
 router.route('/get-tours-stat').get(getTourStat);

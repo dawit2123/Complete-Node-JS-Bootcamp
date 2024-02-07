@@ -59,14 +59,14 @@ const userSchema = new mongoose.Schema({
   }
 });
 //preSave hook (handler) for the userSchema
-userSchema.pre('save', async function(next) {
-  //checking if the password isn't modified
-  if (!this.isModified('password')) next();
-  this.password = await bcrypt.hash(this.password, 12);
-  //deleting the password confirm field
-  this.passwordConfirm = undefined;
-  next();
-});
+// userSchema.pre('save', async function(next) {
+//   //checking if the password isn't modified
+//   if (!this.isModified('password')) next();
+//   this.password = await bcrypt.hash(this.password, 12);
+//   //deleting the password confirm field
+//   this.passwordConfirm = undefined;
+//   next();
+// });
 //preSave hook for the userSchema to set the passwordChangedAt property
 userSchema.pre('save', function(next) {
   if (!this.isModified('password') || this.isNew) return next();
@@ -91,7 +91,6 @@ userSchema.methods.isCorrectPassword = async (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 userSchema.methods.isPasswordChanged = function(JWTTimeStamp) {
-  console.log(this.passwordChangedAt);
   if (this.passwordChangedAt) {
     const changedTimeStamp =
       parseInt(this.passwordChangedAt.getTime(), 10) / 1000;

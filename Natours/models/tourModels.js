@@ -48,7 +48,7 @@ const tourSchema = new mongoose.Schema(
       max: [5, 'A rating should have a maximum value of 5'],
       min: [1, 'A rating should have a minimum value of 1'],
       set: el => {
-        Math.round(el * 100) / 100;
+        return Math.round(el * 100) / 100;
       }
     },
     ratingsQuantity: {
@@ -120,12 +120,12 @@ const tourSchema = new mongoose.Schema(
 tourSchema.index({ price: 1 });
 //adding a compound index with price and ratingsAverage
 tourSchema.index({ price: 1, ratingsAverage: 1 });
-tourSchema.index({tour:1, user:1},{unique: true});
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
 tourSchema.virtual('durationWeek').get(function() {
   return this.duration / 7;
 });
