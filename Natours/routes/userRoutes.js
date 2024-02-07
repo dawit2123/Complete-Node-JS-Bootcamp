@@ -10,19 +10,19 @@ router.post('/login', authController.login);
 
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
-router.patch(
-  'updatePassword',
-  authController.protect,
-  authController.updatePassword
-);
+// protect all the routes down here for only the logged in users
+router.use(authController.protect);
+router.patch('updatePassword', authController.updatePassword);
 router.get('/get-me', userController.getMe, userController.getUser);
+
+//protect all the down routes only to the admins
+router.use(authController.restrictTo('admin'));
 router.patch(
   '/updateMe',
-  authController.protect,
   userController.uploadUserPhoto,
   userController.updateMe
 );
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.delete('/deleteMe', userController.deleteMe);
 
 //restrict the down to admin
 

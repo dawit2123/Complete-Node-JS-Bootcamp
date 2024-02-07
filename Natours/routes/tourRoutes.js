@@ -20,17 +20,35 @@ const router = new express.Router();
 
 //doing nested routes for the review router
 router.use('/:tourId', reviewRouter);
-router.route('/monthly-plan/:year').get(monthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    authController.protect,
+    authController.restrictTo('user', 'lead-guide', 'guide'),
+    monthlyPlan
+  );
 router.route('/get-tours-stat').get(getTourStat);
 router.route('/top-5-best').get(configTop5, getAllTours);
 router
   .route('/')
   .get(getAllTours)
-  .post(addTour);
+  .post(
+    authController.protect,
+    authController.restrictTo('user', 'lead-guide'),
+    addTour
+  );
 router
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+  .patch(
+    authController.protect,
+    authController.restrictTo('user', 'lead-guide'),
+    updateTour
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('user', 'lead-guide'),
+    deleteTour
+  );
 
 module.exports = router;
