@@ -4,8 +4,8 @@ const {
   configTop5,
   deleteTour,
   getAllTours,
-  getTour,
   getToursWithin,
+  getTour,
   getTourStat,
   getDistances,
   monthlyPlan,
@@ -50,5 +50,8 @@ router
     authController.restrictTo('user', 'lead-guide'),
     deleteTour
   );
-
+router
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 module.exports = router;
