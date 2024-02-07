@@ -120,7 +120,7 @@ const tourSchema = new mongoose.Schema(
 tourSchema.index({ price: 1 });
 //adding a compound index with price and ratingsAverage
 tourSchema.index({ price: 1, ratingsAverage: 1 });
-tourSchema;
+tourSchema.index({tour:1, user:1},{unique: true});
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
