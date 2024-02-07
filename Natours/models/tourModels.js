@@ -115,6 +115,12 @@ const tourSchema = new mongoose.Schema(
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+//adding indexes
+tourSchema.index({ price: 1 });
+//adding a compound index with price and ratingsAverage
+tourSchema.index({ price: 1, ratingsAverage: 1 });
+tourSchema;
 // DOCUMENT MIDDLEWARE: runs before .save() and .create()
 tourSchema.pre('save', function(next) {
   this.slug = slugify(this.name, { lower: true });
